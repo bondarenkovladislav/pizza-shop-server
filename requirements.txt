@@ -2,6 +2,7 @@
 # Flask
 # ----------------------
 flask
+flask-cors
 
 
 # ----------------------
@@ -15,3 +16,12 @@ mock
 # ----------------------
 gevent
 gunicorn
+
+
+# ----------------------
+# Mongo DB
+# ----------------------
+pymongo[tls,srv]
+Flask-PyMongo
+jsonfy
+pyjwt
