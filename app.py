@@ -2,7 +2,8 @@ import os
 from flask import Flask, render_template
 from flask_cors import CORS
 from flask_pymongo import PyMongo
-from flask import jsonify
+from flask import jsonify, request
+from bson import ObjectId
 
 import json
 from bson import json_util
@@ -25,11 +26,26 @@ mongo = PyMongo(app)
 def home():
     return 'Deployed'
 
-@app.route("/get-stock")
-def getStock():
+@app.route("/get-products")
+def getProducts():
     stock = mongo.db["pizza-stock"]
-    stock_list = list(stock.find())
-    return json.dumps(stock_list, default=json_util.default)
+    output = []
+    for s in stock.find({}):
+        output.append({'price': s['price'], 'title': s['title'], "id": str(s['_id']), 'description': s['description'], 'img': s['img']})
+    return jsonify(output)
+
+@app.route("/get-product")
+def getProduct():
+    stock = mongo.db["pizza-stock"]
+    id = request.args.get("id")
+
+
+    output = []
+    for s in stock.find({"_id": ObjectId(id)}):
+        output.append({'price': s['price'], 'title': s['title'], "id": str(s['_id']), 'description': s['description'],
+                       'img': s['img']})
+    return jsonify(output)
+
 
 @app.errorhandler(404)
 def page_not_found(error):
