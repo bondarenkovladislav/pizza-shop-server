@@ -26,26 +26,35 @@ mongo = PyMongo(app)
 def home():
     return 'Deployed'
 
-@app.route("/get-products")
+
+@app.route("/products", methods=['GET'])
 def getProducts():
     stock = mongo.db["pizza-stock"]
-    output = []
-    for s in stock.find({}):
-        output.append({'price': s['price'], 'title': s['title'], "id": str(s['_id']), 'description': s['description'], 'img': s['img']})
-    return jsonify(output)
+    items = list(stock.find())
+    for item in items:
+        item.update({"id": str(item['_id'])})
+        del item["_id"]
+    return jsonify(items)
 
-@app.route("/get-product")
+
+@app.route("/product", methods=['GET'])
 def getProduct():
     stock = mongo.db["pizza-stock"]
     id = request.args.get("id")
-
-
     output = []
     for s in stock.find({"_id": ObjectId(id)}):
         output.append({'price': s['price'], 'title': s['title'], "id": str(s['_id']), 'description': s['description'],
-                       'img': s['img']})
+                       'img': s['img'], 'type': s['type'], 'ingredients': s['ingredients']})
     return jsonify(output)
 
+
+@app.route("/ingredients", methods=['GET'])
+def getIngredients():
+    stock = mongo.db["ingredients"]
+    output = []
+    for s in stock.find({}):
+        output.append({'price': s['price'], 'name': s['name'], "id": str(s['_id'])})
+    return jsonify(output)
 
 @app.errorhandler(404)
 def page_not_found(error):
