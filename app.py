@@ -56,6 +56,22 @@ def getIngredients():
         output.append({'price': s['price'], 'name': s['name'], "id": str(s['_id'])})
     return jsonify(output)
 
+@app.route("/order", methods=["GET"])
+def getOrders():
+    phoneNumber = request.args.get("phoneNumber")
+    orders = mongo.db["orders"]
+    items = list(orders.find({"orderInfo.phoneNumber": int(phoneNumber)}))
+    for item in items:
+        item.update({"id": str(item['_id'])})
+        del item["_id"]
+    return jsonify(items)
+
+@app.route("/order", methods=["POST"])
+def createOrder():
+    parsed_string = json.loads(request.data)
+    mongo.db.orders.insert(parsed_string)
+    return 'OK'
+
 @app.errorhandler(404)
 def page_not_found(error):
     """Custom 404 page."""
