@@ -6,8 +6,6 @@ from flask import jsonify, request
 from bson import ObjectId
 
 import json
-from bson import json_util
-
 import logging
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
